@@ -1,0 +1,132 @@
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/AndroidManifest.xml	(revision 2e437ad6b68e1b5efe8398e6abffa7f4fd1681b3)
++++ app/src/main/AndroidManifest.xml	(revision )
+@@ -1,8 +1,10 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+     package="com.example.wangjian.netwj">
+-
++    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
++    <uses-permission android:name="android.permission.INTERNET" />
+     <application
++        android:name=".App"
+         android:allowBackup="true"
+         android:icon="@mipmap/ic_launcher"
+         android:label="@string/app_name"
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/vcs.xml	(revision )
++++ .idea/vcs.xml	(revision )
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: app/src/main/java/com/example/wangjian/netwj/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/wangjian/netwj/MainActivity.java	(revision 2e437ad6b68e1b5efe8398e6abffa7f4fd1681b3)
++++ app/src/main/java/com/example/wangjian/netwj/MainActivity.java	(revision )
+@@ -3,11 +3,58 @@
+ import android.support.v7.app.AppCompatActivity;
+ import android.os.Bundle;
+ 
++import com.android.volley.VolleyError;
++import com.example.netwj.RequestListener;
++import com.example.netwj.RequestParams;
++
+ public class MainActivity extends AppCompatActivity {
+ 
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
++        requestData1();
++    }
++    private void requestData1() {
++        RequestParams params = new RequestParams();
++        params.put("参数", "值");
++        params.put("参数", "值");
++        App.getRequestInstance().post("url", this, params, new RequestListener() {
++            @Override
++            public void requestSuccess(String json) {
++                String jaosn=json;
++            }
++
++            @Override
++            public void requestError(VolleyError e, String error) {
++
++            }
++
++            @Override
++            public void noInternet(VolleyError e, String error) {
++
++            }
++        });
++
++
++        App.getRequestInstance().get(MainActivity.this, "http://www.sparta.vc/api/Sparta/", new RequestListener() {
++            @Override
++            public void requestSuccess(String json) {
++
++                String res = json;
++
++            }
++
++            @Override
++            public void requestError(VolleyError e, String error) {
++                String asda = error.toString();
++            }
++
++            @Override
++            public void noInternet(VolleyError e, String error) {
++
++            }
++        });
++
+     }
+ }
+Index: app/src/main/java/com/example/wangjian/netwj/App.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/wangjian/netwj/App.java	(revision )
++++ app/src/main/java/com/example/wangjian/netwj/App.java	(revision )
+@@ -0,0 +1,23 @@
++package com.example.wangjian.netwj;
++
++import android.app.Application;
++
++import com.example.netwj.IRequest;
++
++/**
++ * Created by wangjian on 2017/7/26.
++ */
++
++public class App extends Application{
++    private static Application mInstance;
++    private static IRequest sIRequest;
++    public static IRequest getRequestInstance() {
++        return sIRequest;
++    }
++    @Override
++    public void onCreate() {
++        super.onCreate();
++        mInstance = this;
++        sIRequest = new IRequest(this);
++    }
++}
